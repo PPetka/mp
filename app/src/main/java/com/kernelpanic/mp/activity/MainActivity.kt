@@ -15,6 +15,7 @@ import com.kernelpanic.mp.map.MapActivityIntent
 import com.kernelpanic.mp.map.MapUiViewState
 import com.kernelpanic.mp.model.base.BaseView
 import io.reactivex.Observable
+import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
 
 
@@ -37,25 +38,40 @@ class MainActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewS
         val mapFragment = fragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
 
+
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this))
                 .get(MainActivityViewModel::class.java)
 
 
+        viewModel.provideViewStates()
+                .subscribe(Consumer {
+                    render(it)
+                })
+
+        viewModel.processIntents(intents())
     }
 
     override fun render(state: MapUiViewState) {
         when (state) {
             is MapUiViewState.InitialState -> {
-                Toast.makeText(this, "Initial State", Toast.LENGTH_SHORT).show()
+                Log.e("RENDERING", "InitialState")
             }
             is MapUiViewState.MapLoadedState -> {
-                Log.e("TAG", maps?.toString())
+                Log.e("RENDERING", "MapLoadedState")
+            }
+            is MapUiViewState.Failed -> {
+                Log.e("RENDERING", "Failed")
+            }
+            is MapUiViewState.InProgress -> {
+                Log.e("RENDERING", "InProgress")
             }
         }
     }
 
     override fun intents(): Observable<MapActivityIntent> {
-        return Observable.merge(initialIntent(), loadMarkersPublisher)
+        return Observable.merge(initialIntent(), loadMarkersPublisher).doOnNext(Consumer {
+            Log.e("EMITING", it.toString())
+        })
     }
 
     private fun initialIntent(): Observable<MapActivityIntent.InitialIntent> {

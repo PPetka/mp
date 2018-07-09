@@ -10,4 +10,9 @@ sealed class MapUiViewState : BaseViewState {
     object InitialState : MapUiViewState()
 
     object MapLoadedState : MapUiViewState()
+
+    object InProgress : MapUiViewState()
+
+    object Failed : MapUiViewState()
+
 }
