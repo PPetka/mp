@@ -1,4 +1,4 @@
-package com.kernelpanic.mp.viewmodel
+package com.kernelpanic.mp.map
 
 import android.arch.lifecycle.ViewModel
 import android.util.Log
@@ -7,11 +7,12 @@ import com.kernelpanic.mp.model.base.BaseViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
+import com.kernelpanic.mp.map.MapResult.LoadMapResult
 
 /**
  * Created by Przemysław Petka on 6/6/2018.
  */
-class MainActivityViewModel(val processor: MapProcessor) : ViewModel(), BaseViewModel<MapActivityIntent, MapUiViewState> {
+class MapViewModel(val processor: MapProcessor) : ViewModel(), BaseViewModel<MapActivityIntent, MapUiViewState> {
     private var intentsSubject: PublishSubject<MapActivityIntent> = PublishSubject.create()
 
     override fun processIntents(intents: Observable<MapActivityIntent>) {
@@ -26,7 +27,6 @@ class MainActivityViewModel(val processor: MapProcessor) : ViewModel(), BaseView
                 .scan<MapUiViewState>(MapUiViewState.InitialState, reducer)
                 .replay(1)
                 .autoConnect(0)
-
     }
 
     fun actionFromIntent(intent: MapActivityIntent): MapAction {
@@ -40,9 +40,11 @@ class MainActivityViewModel(val processor: MapProcessor) : ViewModel(), BaseView
             BiFunction { previousState, result ->
                 Log.e("REDUCING", result.toString())
                 when (result) {
-                    is MapResult.InFlight -> MapUiViewState.InProgress
-                    is MapResult.Success -> MapUiViewState.MapLoadedState
-                    is MapResult.Failure -> MapUiViewState.Failed
+                    is LoadMapResult -> when (result) {
+                        is LoadMapResult.InFlight -> MapUiViewState.InProgress
+                        is LoadMapResult.Success -> MapUiViewState.MapLoadedState
+                        is LoadMapResult.Failure -> MapUiViewState.Failed
+                    }
                 }
             }
 }

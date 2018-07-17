@@ -1,25 +1,21 @@
-package com.kernelpanic.mp.activity
+package com.kernelpanic.mp.map
 
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.kernelpanic.mp.R
 import com.kernelpanic.mp.utils.ViewModelFactory
-import com.kernelpanic.mp.viewmodel.MainActivityViewModel
 import com.google.android.gms.maps.MapFragment
-import com.kernelpanic.mp.map.MapActivityIntent
-import com.kernelpanic.mp.map.MapUiViewState
 import com.kernelpanic.mp.model.base.BaseView
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.PublishSubject
 
 
-class MainActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewState>, OnMapReadyCallback {
+class MapActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewState>, OnMapReadyCallback {
     var maps: GoogleMap? = null
 
     var loadMarkersPublisher: PublishSubject<MapActivityIntent.LoadMarkersIntent> = PublishSubject.create()
@@ -29,7 +25,7 @@ class MainActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewS
         loadMarkersPublisher.onNext(MapActivityIntent.LoadMarkersIntent)
     }
 
-    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var viewModel: MapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +36,7 @@ class MainActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewS
 
 
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this))
-                .get(MainActivityViewModel::class.java)
+                .get(MapViewModel::class.java)
 
 
         viewModel.provideViewStates()

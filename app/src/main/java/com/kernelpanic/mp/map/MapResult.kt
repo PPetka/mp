@@ -7,7 +7,9 @@ import com.kernelpanic.mp.model.base.BaseResult
  */
 sealed class MapResult : BaseResult {
 
-    data class Success(val result: String) : MapResult()
-    data class Failure(val error: Throwable) : MapResult()
-    object InFlight : MapResult()
+    sealed class LoadMapResult : MapResult() {
+        data class Success(val result: String) : LoadMapResult()
+        data class Failure(val error: Throwable) : LoadMapResult()
+        object InFlight : LoadMapResult()
+    }
 }
