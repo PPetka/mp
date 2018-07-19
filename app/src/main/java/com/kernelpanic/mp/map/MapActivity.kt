@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.kernelpanic.mp.R
@@ -20,6 +22,7 @@ class MapActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewSt
 
     var loadMarkersPublisher: PublishSubject<MapActivityIntent.LoadMarkersIntent> = PublishSubject.create()
 
+    lateinit var progressBar: ProgressBar
     override fun onMapReady(maps: GoogleMap?) {
         this.maps = maps
         loadMarkersPublisher.onNext(MapActivityIntent.LoadMarkersIntent)
@@ -31,6 +34,7 @@ class MapActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewSt
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        progressBar = findViewById(R.id.progressBar)
         val mapFragment = fragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
 
@@ -51,15 +55,19 @@ class MapActivity : AppCompatActivity(), BaseView<MapActivityIntent, MapUiViewSt
         when (state) {
             is MapUiViewState.InitialState -> {
                 Log.e("RENDERING", "InitialState")
+                progressBar.visibility = View.GONE
             }
             is MapUiViewState.MapLoadedState -> {
                 Log.e("RENDERING", "MapLoadedState")
+                progressBar.visibility = View.GONE
             }
             is MapUiViewState.Failed -> {
                 Log.e("RENDERING", "Failed")
+                progressBar.visibility = View.GONE
             }
             is MapUiViewState.InProgress -> {
                 Log.e("RENDERING", "InProgress")
+                progressBar.visibility = View.VISIBLE
             }
         }
     }

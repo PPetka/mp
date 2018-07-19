@@ -3,7 +3,9 @@ package com.kernelpanic.mp.map
 import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.internal.operators.observable.ObservableError
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 /**
@@ -36,6 +38,8 @@ var mapItemsProcessor: ObservableTransformer<MapAction, MapResult> = ObservableT
                 .cast(MapResult::class.java)
                 .onErrorReturn(MapResult.LoadMapResult::Failure)
                 .delay(5, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .startWith(MapResult.LoadMapResult.InFlight)
                 .doOnNext { Log.e("PROCESSING", it.toString()) }
 
@@ -49,6 +53,8 @@ var prepareScreenProcessor: ObservableTransformer<MapAction, MapResult> = Observ
                 .cast(MapResult::class.java)
                 .onErrorReturn(MapResult.LoadMapResult::Failure)
                 .delay(5, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .startWith(MapResult.LoadMapResult.InFlight)
                 .doOnNext { Log.e("PROCESSING", it.toString()) }
 
